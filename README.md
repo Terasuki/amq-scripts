@@ -1,5 +1,5 @@
 # AMQ Scripts
-Tampermonkey scripts for [AMQ](animemusicquiz.com).
+Tampermonkey scripts for [AMQ](https://animemusicquiz.com/).
 
 Currently, only **AMQ Instance Tracker** is available.
 
