@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ Instance Practice
 // @namespace    https://github.com/Terasuki/amq-scripts/
-// @version      0.2
+// @version      0.3
 // @description  Records scores.
 // @author       Terasuki
 // @match        https://animemusicquiz.com/*
@@ -12,7 +12,6 @@
 
 (() => {
 
-    let currentSetting;
     let results;
     let active = false;
     let loaded = false;
@@ -43,9 +42,9 @@
             // Toggle script.
             if (message.message.startsWith('.t ')) {
 
+                if (!(message.message.length >= 4)) return;
+
                 settingId = message.message.substring(3);
-                if (!(message.message.length >= 4)) return; 
-                
                 active = true;
                 gameChat.systemMessage('Results recording is now ON using instance ' + settingId + '.');
                 gameChat.systemMessage('This will only apply after starting next round.');
@@ -58,11 +57,21 @@
                 gameChat.systemMessage('Missed: ' + results.missed);
             }
 
+            // Stops the script.
             if (message.message.startsWith('.p')) {
 
-                gameChat.systemMessage('Scipt OFF');
-                active = false;
-                loaded = false;
+                gameChat.systemMessage('Scipt has been turned OFF.');
+                stopScript();
+            }
+
+            // Deletes an instance.
+            if (message.message.startsWith('.r ')) {
+
+                if (!(message.message.length >= 4)) return;
+                const removal = message.message.substring(3);
+
+                localStorage.removeItem(removal);
+                gameChat.systemMessage('Instance ' + removal + ' has been deleted (if it existed).');
             }
         });
     }).bindListener();
@@ -70,7 +79,7 @@
     // Count results.
     new Listener("answer results", (result) => {
         
-        if (!active) return;
+        if (!loaded) return;
 
         if (result.players[0].correct) {
             results.correct++;
@@ -93,23 +102,30 @@
 
     function loadResults() {
 
-        let settings = hostModal.getSettings();
-        currentSetting = settings;
-
         let loadedResults = localStorage.getItem(settingId);
         
         if (!loadedResults) {
+            // Creates new instance if it doesn't exists.
             results = {
                 correct: 0,
                 missed: 0,
-                setting: currentSetting,
-                id: settingId
+                id: settingId,
+                isSetting: true
             };
         }
         else {
-            results = JSON.parse(loadedResults);
+            try {
+                results = JSON.parse(loadedResults);
+                if (!results.isSetting) {
+                    throw new Error('Not a setting');
+                }
+            } catch (error) {
+                gameChat.systemMessage('Invalid key, most likely used by another script. Please use another name for the instance.');
+                active = false;
+                loaded = false;
+                return;
+            }
         }
-
         loaded = true;
     }
 
@@ -130,12 +146,23 @@
         $("#statsGuessRate").text(guessRate);
     }
 
+    function stopScript() {
+
+        $("#statsInstance").text('No selected instance');
+        $("#statsCorrect").text(0);
+        $("#statsMissed").text(0);
+        $("#statsGuessRate").text(0);
+        
+        active = false;
+        loaded = false;
+    }
+
     function createStatsWindow() {
 
         statsWindow = new AMQWindow({
             title: 'Stats',
             width: 300,
-            height: 300,
+            height: 500,
             draggable: true,
             zIndex: 1000,
             id: 'statsWindow'
@@ -145,6 +172,16 @@
             width: 1.0,
             height: 200,
             id: 'resultsPanel'
+        });
+
+        statsWindow.addPanel({
+            width: 1.0,
+            height: 50,
+            position: {
+                x: 0,
+                y: 200
+            },
+            id: 'controlPanel'
         });
 
         statsWindow.panels[0].panel.append(
@@ -162,12 +199,21 @@
             .append(
                 $(
                     `<div id="resultsPanelRight">
-                        <p id="statsInstance">null</p>
+                        <p id="statsInstance">No selected instance</p>
                         <p id="statsCorrect">0</p>
                         <p id="statsMissed">0</p>
                         <p id="statsGuessRate">0</p>
                     </div>`
                 )
+            )
+        );
+
+        statsWindow.panels[1].panel.append(
+            $(`<div id="controlPanelContainer"></div>`)
+            .append(
+                $(`<button id="controlStop" class="btn btn-default">Stop</button>`).click(() => {
+                    stopScript();
+                })
             )
         );
 
@@ -184,7 +230,7 @@
                     }
                 })
                 .popover({
-                    content: "Stats",
+                    content: "Instance Stats",
                     trigger: "hover",
                     placement: "bottom"
                 })
@@ -204,13 +250,20 @@
             padding-right: 5px;
             text-align: right;
             float: right;
-            width: 60%;
+            width: 50%;
         }
         #resultsPanelLeft {
             padding-left: 5px;
             text-align: left;
             float: left;
-            width: 60%;
+            width: 50%;
+        }
+        #controlPanel {
+            text-align: center;
+            
+        }
+        #controlPanelContainer > button {
+            width: 70px;
         }
     `);
 
@@ -219,6 +272,7 @@
         author: "Terasuki",
         description: `
             <p>Track your stats across custom set instances. Useful for practice.</p>
+            <p>Thanks to TheJoseph98 for providing window code.</p>
         `
     });
 
