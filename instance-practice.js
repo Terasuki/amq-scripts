@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ Instance Practice
-// @namespace    https://github.com/Terasuki/amq-scripts/
-// @version      0.3
+// @namespace    https://github.com/Terasuki
+// @version      0.4
 // @description  Records scores.
 // @author       Terasuki
 // @match        https://animemusicquiz.com/*
@@ -16,6 +16,7 @@
     let active = false;
     let loaded = false;
     let settingId = '';
+    let saves;
 
     let statsWindow;
 
@@ -51,7 +52,7 @@
             }
 
             // Print current scores.
-            if (message.message.startsWith('.s') && loaded) {
+            if (message.message.startsWith('.c') && loaded) {
                 gameChat.systemMessage('Current stats of instance ' + settingId + '.');
                 gameChat.systemMessage('Correct: ' + results.correct);
                 gameChat.systemMessage('Missed: ' + results.missed);
@@ -71,7 +72,38 @@
                 const removal = message.message.substring(3);
 
                 localStorage.removeItem(removal);
+
                 gameChat.systemMessage('Instance ' + removal + ' has been deleted (if it existed).');
+
+                // Remove from save if it was saved.
+                if (!(saves.includes(removal))) return;
+
+                saves = saves.filter((save) => save !== removal);
+            }
+
+            // Opens the stats window.
+            if (message.message.startsWith('.w')) {
+                toggleStatsWindow();
+            }
+
+            // Prints all saved instances.
+            if (message.message.startsWith('.i')) {
+
+                if (!saves.length) {
+                    gameChat.systemMessage('No saved instances found.');
+                    return;
+                }
+                gameChat.systemMessage('Current saved instances:');
+                gameChat.systemMessage(saves.toString());
+            }
+
+            // Saves an instance.
+            if (message.message.startsWith('.s ')) {
+
+                if (!(message.message.length >= 4)) return;
+
+                const save = message.message.substring(3);
+                saveInstance(save);
             }
         });
     }).bindListener();
@@ -139,7 +171,7 @@
 
         saveResults();
 
-        let guessRate = ((results.correct / (results.missed + results.correct)) * 100).toFixed(3);
+        let guessRate = ((results.correct / (results.missed + results.correct)) * 100).toFixed(2);
         $("#statsInstance").text(settingId);
         $("#statsCorrect").text(results.correct);
         $("#statsMissed").text(results.missed);
@@ -155,6 +187,40 @@
         
         active = false;
         loaded = false;
+    }
+
+    function toggleStatsWindow() {
+        if (statsWindow.isVisible()) {
+            statsWindow.close();
+        }
+        else {
+            statsWindow.open();
+        }
+    }
+
+    function loadSaves() {
+
+        let loadedSaves = localStorage.getItem('instancesSaves');
+
+        if(!loadedSaves) {
+            // Creates new saves array if one doesn't exist
+            saves = [];
+            return;
+        }
+
+        saves = JSON.parse(loadedSaves);
+    }
+
+    function saveInstance(instance) {
+
+        const save = instance.toString();
+
+        // Do not save if not an instance or already saved.
+        if (!(localStorage.getItem(save))) return;
+        if (saves.includes(save)) return;
+
+        saves.push(save);
+        localStorage.setItem('instancesSaves', JSON.stringify(saves));
     }
 
     function createStatsWindow() {
@@ -182,6 +248,16 @@
                 y: 200
             },
             id: 'controlPanel'
+        });
+
+        statsWindow.addPanel({
+            width: 1.0,
+            height: 100,
+            position: {
+                x: 0,
+                y: 250
+            },
+            id: 'inputPanel'
         });
 
         statsWindow.panels[0].panel.append(
@@ -213,6 +289,40 @@
             .append(
                 $(`<button id="controlStop" class="btn btn-default">Stop</button>`).click(() => {
                     stopScript();
+                    gameChat.systemMessage('Stopping results recording.');
+                })
+            )
+        );
+
+        statsWindow.panels[2].panel.append(
+            $(`<div id="inputPanelContainer"></div>`)
+            .append(
+                $(`<input type="text" id="inputInstance" placeholder="Enter instance...">`)
+            )
+            .append(
+                $(`<button id="inputEnter" class="btn btn-primary">Select</button>`).click(() => {
+                    settingId = $("#inputInstance").val();
+
+                    if (!settingId) return;
+
+                    active = true;
+                    gameChat.systemMessage('Results recording is now ON using instance ' + settingId + '.');
+                    gameChat.systemMessage('This will only apply after starting next round.');
+                })
+            )
+            .append(
+                $(`<button id="inputSave" class="btn btn-default">Save</button>`).click(() => {
+                    const save = $("#inputInstance").val();
+
+                    if (!save) return;
+
+                    saveInstance(save);
+
+                })
+            )
+            .append(
+                $(`<button id="inputClear" class="btn btn-default">Clear</button>`).click(() => {
+                    $("#inputInstance").val('');
                 })
             )
         );
@@ -222,25 +332,23 @@
         $("#qpOptionContainer > div")
             .append($(`<div id="qpStatsTracker" class="clickAble qpOption"><i aria-hidden="true" class="fa fa-music qpMenuItem"></i></div>`)
                 .click(() => {
-                    if (statsWindow.isVisible()) {
-                        statsWindow.close();
-                    }
-                    else {
-                        statsWindow.open();
-                    }
+                    toggleStatsWindow();
                 })
                 .popover({
                     content: "Instance Stats",
                     trigger: "hover",
                     placement: "bottom"
                 })
-        );
+            );
     }
 
     function setup() {
-        createStatsWindow();
-    }
 
+        createStatsWindow();
+        loadSaves();
+
+    }
+    
     AMQ_addStyle(`
         #qpStatsTracker {
             width: 30px;
@@ -259,11 +367,14 @@
             width: 50%;
         }
         #controlPanel {
-            text-align: center;
-            
+            text-align: center;     
         }
         #controlPanelContainer > button {
             width: 70px;
+        }
+        #inputInstance {
+            text-overflow: ellipsis;
+            color: black;
         }
     `);
 
@@ -275,5 +386,5 @@
             <p>Thanks to TheJoseph98 for providing window code.</p>
         `
     });
-
+    
 })();
