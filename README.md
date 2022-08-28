@@ -16,3 +16,5 @@ Basic functionality is provided via chat commands.
 **.s**: prints to chat loaded instance results.
 
 **.p**: stops the script.
+
+**.r <instance>**: deletes an instance if it does exist.
