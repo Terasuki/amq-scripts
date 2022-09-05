@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ Instance Practice
 // @namespace    https://github.com/Terasuki
-// @version      0.4
+// @version      0.5
 // @description  Records scores.
 // @author       Terasuki
 // @match        https://animemusicquiz.com/*
@@ -21,21 +21,21 @@
     let statsWindow;
 
     // Do not load on start page.
-    if (document.getElementById("startPage")) return;
+    if (document.getElementById('startPage')) return;
 
     // Wait for game to start before starting script.
     let loadInterval = setInterval(() => {
-        if (document.getElementById("loadingScreen").classList.contains("hidden")) {
+        if (document.getElementById('loadingScreen').classList.contains('hidden')) {
             setup();
             clearInterval(loadInterval);
         }
     }, 500);
 
     // Initialise on game start.
-    new Listener("Game Starting", initialise).bindListener();
+    new Listener('Game Starting', initialise).bindListener();
 
     // Chat commands.
-    new Listener("game chat update", (payload) => {
+    new Listener('game chat update', (payload) => {
         payload.messages.forEach((message) => {
 
             if (message.sender !== selfName) return;
@@ -109,7 +109,7 @@
     }).bindListener();
 
     // Count results.
-    new Listener("answer results", (result) => {
+    new Listener('answer results', (result) => {
         
         if (!loaded) return;
 
@@ -172,24 +172,25 @@
         saveResults();
 
         let guessRate = ((results.correct / (results.missed + results.correct)) * 100).toFixed(2);
-        $("#statsInstance").text(settingId);
-        $("#statsCorrect").text(results.correct);
-        $("#statsMissed").text(results.missed);
-        $("#statsGuessRate").text(guessRate);
+        $('#statsInstance').text(settingId);
+        $('#statsCorrect').text(results.correct);
+        $('#statsMissed').text(results.missed);
+        $('#statsGuessRate').text(guessRate);
     }
 
     function stopScript() {
 
-        $("#statsInstance").text('No selected instance');
-        $("#statsCorrect").text(0);
-        $("#statsMissed").text(0);
-        $("#statsGuessRate").text(0);
+        $('#statsInstance').text('No selected instance');
+        $('#statsCorrect').text(0);
+        $('#statsMissed').text(0);
+        $('#statsGuessRate').text(0);
         
         active = false;
         loaded = false;
     }
 
     function toggleStatsWindow() {
+
         if (statsWindow.isVisible()) {
             statsWindow.close();
         }
@@ -236,16 +237,16 @@
 
         statsWindow.addPanel({
             width: 1.0,
-            height: 200,
+            height: 100,
             id: 'resultsPanel'
         });
 
         statsWindow.addPanel({
             width: 1.0,
-            height: 50,
+            height: 100,
             position: {
                 x: 0,
-                y: 200
+                y: 100
             },
             id: 'controlPanel'
         });
@@ -261,10 +262,10 @@
         });
 
         statsWindow.panels[0].panel.append(
-            $(`<div id="resultsPanelContainer"></div>`)
+            $(`<div id='resultsPanelContainer'></div>`)
             .append(
                 $(
-                    `<div id="resultsPanelLeft">
+                    `<div id='resultsPanelLeft'>
                         <p>Current instance</p>
                         <p>Correct</p>
                         <p>Missed</p>
@@ -274,45 +275,42 @@
             )
             .append(
                 $(
-                    `<div id="resultsPanelRight">
-                        <p id="statsInstance">No selected instance</p>
-                        <p id="statsCorrect">0</p>
-                        <p id="statsMissed">0</p>
-                        <p id="statsGuessRate">0</p>
+                    `<div id='resultsPanelRight'>
+                        <p id='statsInstance'>No selected instance</p>
+                        <p id='statsCorrect'>0</p>
+                        <p id='statsMissed'>0</p>
+                        <p id='statsGuessRate'>0</p>
                     </div>`
                 )
             )
         );
 
         statsWindow.panels[1].panel.append(
-            $(`<div id="controlPanelContainer"></div>`)
+            $(`<div id='controlPanelContainer'></div>`)
             .append(
-                $(`<button id="controlStop" class="btn btn-default">Stop</button>`).click(() => {
+                $(`<button id='controlStop' class='btn btn-default'>Stop</button>`).click(() => {
                     stopScript();
                     gameChat.systemMessage('Stopping results recording.');
                 })
             )
-        );
-
-        statsWindow.panels[2].panel.append(
-            $(`<div id="inputPanelContainer"></div>`)
             .append(
-                $(`<input type="text" id="inputInstance" placeholder="Enter instance...">`)
+                $(`<input type='text' id='inputInstance' placeholder='Enter instance...'>`)
             )
             .append(
-                $(`<button id="inputEnter" class="btn btn-primary">Select</button>`).click(() => {
-                    settingId = $("#inputInstance").val();
+                $(`<button id='inputEnter' class='btn btn-primary'>Select</button>`).click(() => {
+                    save = $('#inputInstance').val();
 
-                    if (!settingId) return;
+                    if (!save) return;
 
+                    settingId = save;
                     active = true;
                     gameChat.systemMessage('Results recording is now ON using instance ' + settingId + '.');
                     gameChat.systemMessage('This will only apply after starting next round.');
                 })
             )
             .append(
-                $(`<button id="inputSave" class="btn btn-default">Save</button>`).click(() => {
-                    const save = $("#inputInstance").val();
+                $(`<button id='inputSave' class='btn btn-default'>Save</button>`).click(() => {
+                    const save = $('#inputInstance').val();
 
                     if (!save) return;
 
@@ -321,32 +319,56 @@
                 })
             )
             .append(
-                $(`<button id="inputClear" class="btn btn-default">Clear</button>`).click(() => {
-                    $("#inputInstance").val('');
+                $(`<button id='inputClear' class='btn btn-default'>Clear</button>`).click(() => {
+                    $('#inputInstance').val('');
                 })
             )
         );
 
-        let oldWidth = $("#qpOptionContainer").width();
-        $("#qpOptionContainer").width(oldWidth + 35);
-        $("#qpOptionContainer > div")
-            .append($(`<div id="qpStatsTracker" class="clickAble qpOption"><i aria-hidden="true" class="fa fa-music qpMenuItem"></i></div>`)
+        statsWindow.panels[2].panel.append(
+            $(`<div id='inputPanelContainer'></div>`)
+           .append(
+                $(`<select id='saveDD'>
+                </select>`)
+            )
+            .append(
+                $(`<button id='ddSelect' class='btn btn-primary'>Select</button>`).click(() => {
+                    const save = $('#saveDD').val();
+
+                    if (!save) return;
+
+                    settingId = save;
+                    active = true;
+                    gameChat.systemMessage('Results recording is now ON using instance ' + settingId + '.');
+                    gameChat.systemMessage('This will only apply after starting next round.');
+                })
+            )
+        );
+
+        let dropdown = document.getElementById('saveDD');
+        saves.forEach((element, key) => {
+            dropdown[key] = new Option(element, element);
+        });
+
+        let oldWidth = $('#qpOptionContainer').width();
+        $('#qpOptionContainer').width(oldWidth + 35);
+        $('#qpOptionContainer > div')
+            .append($(`<div id='qpStatsTracker' class='clickAble qpOption'><i aria-hidden='true' class='fa fa-music qpMenuItem'></i></div>`)
                 .click(() => {
                     toggleStatsWindow();
                 })
                 .popover({
-                    content: "Instance Stats",
-                    trigger: "hover",
-                    placement: "bottom"
+                    content: 'Instance Stats',
+                    trigger: 'hover',
+                    placement: 'bottom'
                 })
             );
     }
 
     function setup() {
 
-        createStatsWindow();
         loadSaves();
-
+        createStatsWindow();
     }
     
     AMQ_addStyle(`
@@ -366,6 +388,12 @@
             float: left;
             width: 50%;
         }
+        #resultsPanelRight > p {
+            margin-bottom: 0;
+        }
+        #resultsPanelLeft > p {
+            margin-bottom: 0;
+        }
         #controlPanel {
             text-align: center;     
         }
@@ -376,11 +404,14 @@
             text-overflow: ellipsis;
             color: black;
         }
+        #saveDD {
+            color: black;
+        }
     `);
 
     AMQ_addScriptData({
-        name: "Guess rate tracker",
-        author: "Terasuki",
+        name: 'Guess rate tracker',
+        author: 'Terasuki',
         description: `
             <p>Track your stats across custom set instances. Useful for practice.</p>
             <p>Thanks to TheJoseph98 for providing window code.</p>

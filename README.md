@@ -11,10 +11,16 @@ Further testing still required, use at your own risk.
 
 Basic functionality is provided via chat commands.
 
+**.w**: opens the main menu.
+
 **.t <instance>**: selects an instance or creates a new one if it does not exist.
 
-**.s**: prints to chat loaded instance results.
+**.c**: prints to chat loaded instance results.
 
 **.p**: stops the script.
 
 **.r <instance>**: deletes an instance if it does exist.
+
+**.s <instance>**: saves an instance.
+
+**.i**: prints out all saved instances.
