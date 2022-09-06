@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ Instance Practice
 // @namespace    https://github.com/Terasuki
-// @version      0.5
+// @version      0.5.1
 // @description  Records scores.
 // @author       Terasuki
 // @match        https://animemusicquiz.com/*
@@ -40,19 +40,18 @@
 
             if (message.sender !== selfName) return;
             
-            // Toggle script.
+            // Loads an instance.
             if (message.message.startsWith('.t ')) {
 
                 if (!(message.message.length >= 4)) return;
 
-                settingId = message.message.substring(3);
-                active = true;
-                gameChat.systemMessage('Results recording is now ON using instance ' + settingId + '.');
-                gameChat.systemMessage('This will only apply after starting next round.');
+                const save = message.message.substring(3);
+                selectInstance(save);
             }
 
             // Print current scores.
             if (message.message.startsWith('.c') && loaded) {
+
                 gameChat.systemMessage('Current stats of instance ' + settingId + '.');
                 gameChat.systemMessage('Correct: ' + results.correct);
                 gameChat.systemMessage('Missed: ' + results.missed);
@@ -61,7 +60,6 @@
             // Stops the script.
             if (message.message.startsWith('.p')) {
 
-                gameChat.systemMessage('Scipt has been turned OFF.');
                 stopScript();
             }
 
@@ -79,10 +77,12 @@
                 if (!(saves.includes(removal))) return;
 
                 saves = saves.filter((save) => save !== removal);
+                localStorage.setItem('instancesSaves', JSON.stringify(saves));
             }
 
-            // Opens the stats window.
+            // Toggles the stats window.
             if (message.message.startsWith('.w')) {
+
                 toggleStatsWindow();
             }
 
@@ -129,19 +129,19 @@
         if (!active) return;
 
         // Load previous results.
-        loadResults();
+        loadResults(settingId);
     }
 
-    function loadResults() {
+    function loadResults(instance) {
 
-        let loadedResults = localStorage.getItem(settingId);
+        let loadedResults = localStorage.getItem(instance);
         
         if (!loadedResults) {
             // Creates new instance if it doesn't exists.
             results = {
                 correct: 0,
                 missed: 0,
-                id: settingId,
+                id: instance,
                 isSetting: true
             };
         }
@@ -187,6 +187,7 @@
         
         active = false;
         loaded = false;
+        gameChat.systemMessage('Stopping results recording.');
     }
 
     function toggleStatsWindow() {
@@ -222,14 +223,23 @@
 
         saves.push(save);
         localStorage.setItem('instancesSaves', JSON.stringify(saves));
+        gameChat.systemMessage('Successfully saved instance ' + save + '.');
+    }
+
+    function selectInstance(instance) {
+
+        settingId = instance.toString();
+        active = true;
+        gameChat.systemMessage('Results recording is now ON using instance ' + settingId + '.');
+        gameChat.systemMessage('This will only apply after starting next round.');
     }
 
     function createStatsWindow() {
 
         statsWindow = new AMQWindow({
-            title: 'Stats',
+            title: 'Instance Stats',
             width: 300,
-            height: 500,
+            height: 350,
             draggable: true,
             zIndex: 1000,
             id: 'statsWindow'
@@ -253,10 +263,10 @@
 
         statsWindow.addPanel({
             width: 1.0,
-            height: 100,
+            height: 50,
             position: {
                 x: 0,
-                y: 250
+                y: 200
             },
             id: 'inputPanel'
         });
@@ -288,12 +298,6 @@
         statsWindow.panels[1].panel.append(
             $(`<div id='controlPanelContainer'></div>`)
             .append(
-                $(`<button id='controlStop' class='btn btn-default'>Stop</button>`).click(() => {
-                    stopScript();
-                    gameChat.systemMessage('Stopping results recording.');
-                })
-            )
-            .append(
                 $(`<input type='text' id='inputInstance' placeholder='Enter instance...'>`)
             )
             .append(
@@ -302,10 +306,7 @@
 
                     if (!save) return;
 
-                    settingId = save;
-                    active = true;
-                    gameChat.systemMessage('Results recording is now ON using instance ' + settingId + '.');
-                    gameChat.systemMessage('This will only apply after starting next round.');
+                    selectInstance(save);
                 })
             )
             .append(
@@ -323,6 +324,11 @@
                     $('#inputInstance').val('');
                 })
             )
+            .append(
+                $(`<button id='controlStop' class='btn btn-default'>Stop</button>`).click(() => {
+                    stopScript();
+                })
+            )
         );
 
         statsWindow.panels[2].panel.append(
@@ -337,10 +343,7 @@
 
                     if (!save) return;
 
-                    settingId = save;
-                    active = true;
-                    gameChat.systemMessage('Results recording is now ON using instance ' + settingId + '.');
-                    gameChat.systemMessage('This will only apply after starting next round.');
+                    selectInstance(save);
                 })
             )
         );
@@ -398,24 +401,27 @@
             text-align: center;     
         }
         #controlPanelContainer > button {
-            width: 70px;
+            margin: 5px;
         }
         #inputInstance {
             text-overflow: ellipsis;
             color: black;
         }
+        #inputPanel {
+            text-align: center;
+        }
         #saveDD {
             color: black;
+            margin-right: 5px;
         }
     `);
 
     AMQ_addScriptData({
-        name: 'Guess rate tracker',
+        name: 'AMQ Instance Tracker',
         author: 'Terasuki',
         description: `
             <p>Track your stats across custom set instances. Useful for practice.</p>
             <p>Thanks to TheJoseph98 for providing window code.</p>
         `
     });
-    
 })();
