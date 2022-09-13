@@ -2,7 +2,7 @@
 // @name         AMQ Instance Practice
 // @namespace    https://github.com/Terasuki
 // @version      0.5.1
-// @description  Records scores.
+// @description  Tracks your correct and missed guesses for the selected instance.
 // @author       Terasuki
 // @match        https://animemusicquiz.com/*
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqWindows.js
