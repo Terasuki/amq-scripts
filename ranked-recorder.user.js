@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ Ranked Records
 // @namespace    https://github.com/Terasuki
-// @version      0.1
+// @version      0.1.1
 // @description  Tracks personal ranked results.
 // @author       Terasuki
 // @match        https://animemusicquiz.com/*
@@ -14,8 +14,8 @@
 
 (() => {
     
-    // Insert here Google Scripc App deployment link.
-    const scriptLink = 'https://script.google.com/macros/s/AKfycbzFEE88vF7SEEsTM54tbcU8FHYSCYNlCl1maHFv-UQS3Dp49gn7EpVnPrFD0GsZ8ddZTA/exec';
+    // Insert here Google Script App deployment link.
+    const scriptLink = '';
 
     let playerResults = {
         name: '',
@@ -25,7 +25,7 @@
     // Do not load on start page.
     if (document.getElementById('startPage')) return;
 
-    // if (quiz.gameMode !== 'Ranked') return;
+    if (quiz.gameMode !== 'Ranked') return;
 
     // Wait for game to start before starting script.
     let loadInterval = setInterval(() => {
