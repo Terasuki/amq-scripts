@@ -1,5 +1,5 @@
 # AMQ Scripts
-Tampermonkey scripts for [AMQ](https://animemusicquiz.com/). I made the scripts here to help me automate a lot of statistic recording I did manually; expect bad coding/practices as I never coded an app nor used JavaScript/HTML/CSS before. Feedback appreciated.
+Tampermonkey scripts for [AMQ](https://animemusicquiz.com/). I made the scripts here to help me automate statistic recording I did manually; expect bad coding/practices as I never coded an app nor used JavaScript/HTML/CSS before, thanks to other userscripts for helping me. Feedback appreciated.
 
 Use them at your own risk.
 
@@ -22,3 +22,7 @@ Basic functionality is provided via chat commands.
 **.s <instance>**: saves an instance. Bug: needs page refresh to properly update.
 
 **.i**: prints out all saved instances.
+
+## Ranked Records
+
+Tracks your results from ranked and writes them in a spreadsheet. Additional features are being planned.
