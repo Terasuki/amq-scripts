@@ -25,4 +25,8 @@ Basic functionality is provided via chat commands.
 
 ## Ranked Records
 
-Tracks your results from ranked and writes them in a spreadsheet. Additional features are being planned.
+Tracks your results from ranked and writes them in a spreadsheet. Also provides a window with some additional information.
+
+To use, simply join a (ranked) room, open the interface once the game starts and check 'Record current game'. This is required to send the results to the spreadsheet.
+
+The script can be used outside of Ranked by commenting out the guard clauses.
