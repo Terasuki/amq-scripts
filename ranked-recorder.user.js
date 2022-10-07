@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMQ Ranked Records
 // @namespace    https://github.com/Terasuki
-// @version      0.2
+// @version      1.0
 // @description  Tracks personal ranked results.
 // @author       Terasuki
 // @match        https://animemusicquiz.com/*
@@ -19,7 +19,7 @@
 
     // This object is sent to the spreadsheet.
     let playerResults = {
-        name: '',
+        name: selfName,
         topPercent: 100,
         pointsArray: [0],
         opsRate: 0,
@@ -36,7 +36,7 @@
         eds: 0,
         inCorrect: 0,
         ins: 0
-    }
+    };
 
     // Do not load on start page.
     if (document.getElementById('startPage')) return;
@@ -52,7 +52,7 @@
     // Answer reveal.
     new Listener('answer results', (result) => {
 
-        // if (quiz.gameMode !== 'Ranked') return;
+        if (quiz.gameMode !== 'Ranked') return;
 
         updateResults(result);
     }).bindListener();
@@ -60,13 +60,14 @@
     // Game end.
     new Listener('quiz end result', (result) => {
 
-        // if (quiz.gameMode !== 'Ranked') return;
+        if (quiz.gameMode !== 'Ranked') return;
         if (!recording) return;
 
         playerResults.topPercent = $('#currentTop').text();
         playerResults.opsRate = rate.ops !== 0 ? ((rate.opCorrect/rate.ops)*100).toFixed(2) : 'n/a';
         playerResults.edsRate = rate.eds !== 0 ? ((rate.edCorrect/rate.eds)*100).toFixed(2) : 'n/a';
         playerResults.insRate = rate.ins !== 0 ? ((rate.inCorrect/rate.ins)*100).toFixed(2) : 'n/a';
+        playerResults.name = selfName;
 
         GM_xmlhttpRequest({
             method: 'POST',
@@ -88,17 +89,22 @@
         $('#recordCheckbox').prop('checked', false);
     }).bindListener();
 
+    // Before game.
+    new Listener('quiz ready', (data) => {
+        resetData();
+    }).bindListener();
+
     function updateResults(result) {
         
         let allScores = [];
         let playerPos = 0;
-        result.players.forEach((player) => {
+        setTimeout(() => {
+            result.players.forEach((player) => {
 
-            setTimeout(() => {
                 allScores.push(player.score);
-
+    
                 if (quiz.players[player.gamePlayerId]._name !== selfName) return;
-                
+                    
                 playerResults.pointsArray.push(player.score);
                 playerPos = player.position;
                 if (result.songInfo.type === 1) {
@@ -113,23 +119,49 @@
                     rate.ins++;
                     if(player.correct) {rate.inCorrect++;}
                 }
+            });
+            allScores.sort((a, b) => a - b);
+            $('#top5').text(allScores[allScores.length - Math.ceil(allScores.length/20)]);
+            $('#top20').text(allScores[allScores.length - Math.ceil(allScores.length/5)]);
+            $('#top50').text(allScores[allScores.length - Math.ceil(allScores.length/2)]);
+            $('#currentTop').text((playerPos/allScores.length *100).toFixed(2));
+            $('#opR').text(rate.ops !== 0 ? ((rate.opCorrect/rate.ops)*100).toFixed(2) : 'n/a');
+            $('#edR').text(rate.eds !== 0 ? ((rate.edCorrect/rate.eds)*100).toFixed(2) : 'n/a');
+            $('#inR').text(rate.ins !== 0 ? ((rate.inCorrect/rate.ins)*100).toFixed(2) : 'n/a');
 
-                console.log(rate);
-                allScores.sort((a, b) => a - b);
-                $('#top5').text(allScores[allScores.length - Math.ceil(allScores.length/20)]);
-                $('#top20').text(allScores[allScores.length - Math.ceil(allScores.length/5)]);
-                $('#top50').text(allScores[allScores.length - Math.ceil(allScores.length/2)]);
-                $('#currentTop').text((playerPos/allScores.length *100).toFixed(2));
-                $('#opR').text(rate.ops !== 0 ? ((rate.opCorrect/rate.ops)*100).toFixed(2) : 'n/a');
-                $('#edR').text(rate.eds !== 0 ? ((rate.edCorrect/rate.eds)*100).toFixed(2) : 'n/a');
-                $('#inR').text(rate.ins !== 0 ? ((rate.inCorrect/rate.ins)*100).toFixed(2) : 'n/a');
+            if (allScores.length < 4) return;
+            $('#top3').text(allScores[allScores.length - 3]);
+        }, 1);
+    }
 
-                if (allScores.length < 4) return;
-                $('#top3').text(allScores[allScores.length - 3]);
-            }, 1);
-        });
+    function toggleWindow(window) {
 
-        
+        if (window.isVisible()) {
+            window.close();
+        }
+        else {
+            window.open();
+        }
+    }
+
+    function resetData() {
+
+        playerResults = {
+            name: selfName,
+            topPercent: 100,
+            pointsArray: [0],
+            opsRate: 0,
+            edsRate: 0,
+            insRate: 0
+        };
+        rate = {
+            opCorrect: 0,
+            ops: 0,
+            edCorrect: 0,
+            eds: 0,
+            inCorrect: 0,
+            ins: 0
+        };
     }
 
     function createRankedWindow() {
@@ -223,20 +255,9 @@
             );
     }
 
-    function toggleWindow(window) {
-
-        if (window.isVisible()) {
-            window.close();
-        }
-        else {
-            window.open();
-        }
-    }
-
     function setup() {
 
         createRankedWindow();
-        playerResults.name = selfName;
     }
 
     AMQ_addStyle(`
