@@ -15,7 +15,7 @@
 (() => {
     
     // Insert here Google Script App deployment link.
-    const scriptLink = '';
+    const scriptLink = 'https://script.google.com/macros/s/AKfycbygMU7pUISg-7vQ2pGIqvFSug2QdMoE-HPA3MtTKswbXbzH5wd_QUI19nwrTAL50-FwoA/exec';
 
     // This object is sent to the spreadsheet.
     let playerResults = {

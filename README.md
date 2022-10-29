@@ -30,3 +30,5 @@ Tracks your results from ranked and writes them in a spreadsheet. Also provides 
 To use, simply join a (ranked) room, open the interface once the game starts and check 'Record current game'. This is required to send the results to the spreadsheet.
 
 The script can be used outside of Ranked by commenting out the guard clauses.
+
+If you want to run the script privately, you can find the script for the sheet [here](macros/ranked-sheet.gs) and the template for the sheets [here](https://docs.google.com/spreadsheets/d/1uMkyW8L-qEYOEVpyRV4g3A_nApwa7boo9NIwq9z9-98/edit?usp=sharing). Lastly, change the value of the constant `scriptLink` to your app deployment link.
