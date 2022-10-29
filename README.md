@@ -27,6 +27,8 @@ Basic functionality is provided via chat commands.
 
 Tracks your results from ranked and writes them in a spreadsheet. Also provides a window with some additional information.
 
+[Click here to find the spreadsheet](https://docs.google.com/spreadsheets/d/1__fuLTrf1Aonf8sQ3yeyWWgBelWlQuPBJ5rBFFKM77g/edit?usp=sharing)
+
 To use, simply join a (ranked) room, open the interface once the game starts and check 'Record current game'. This is required to send the results to the spreadsheet.
 
 The script can be used outside of Ranked by commenting out the guard clauses.
