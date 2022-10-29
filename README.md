@@ -1,7 +1,7 @@
 # AMQ Scripts
 Tampermonkey scripts for [AMQ](https://animemusicquiz.com/). I made the scripts here to help me automate statistic recording I did manually; expect bad coding/practices as I never coded an app nor used JavaScript/HTML/CSS before, thanks to other userscripts for helping me. Feedback appreciated.
 
-Use them at your own risk.
+Use them at your own risk. You can contact me thorugh Discord (Terasuki#0655) or through AMQ's website itself (TrueXC).
 
 ## Instance Tracker 
 
