@@ -49,13 +49,12 @@
         obtainQuizId.bindListener();
     }
     
-
     AMQ_addScriptData({
         name: 'Song List Auto Download',
         author: 'Terasuki',
         description: `
-            <p>Track your stats across custom set instances. Useful for practice.</p>
-            <p>Thanks to TheJoseph98 for download code.</p>
+            <p>Automatically downloads latest game's JSON file, from AMQ's Song History.</p>
+            <p>Thanks to TheJoseph98 for download and window code.</p>
         `
     });
 })();
