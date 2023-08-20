@@ -293,7 +293,7 @@
     `);
 
     AMQ_addScriptData({
-        name: 'AMQ Ranked Records',
+        name: 'AMQ Ranked Tracker',
         author: 'Terasuki',
         description: `
             <p>Tracks current ranked position information and song distribution, useful for Novice runs.</p>
