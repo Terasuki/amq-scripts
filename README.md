@@ -3,27 +3,11 @@ Tampermonkey scripts for [AMQ](https://animemusicquiz.com/). I made the scripts 
 
 Use them at your own risk. You can contact me thorugh Discord (terasuki) or through AMQ's website itself (TrueXC).
 
-## Instance Tracker 
+## Song List Auto Download
 
-Tracks your correct and missed guesses for the selected instance, saving them on localStorage. Also provides additional stats such as guess rate.
+Automatically downloads the lastest game's JSON file from the song list. 
 
-Basic functionality is provided via chat commands.
-
-**.w**: opens the main menu.
-
-**.t <instance>**: selects an instance or creates a new one if it does not exist.
-
-**.c**: prints to chat loaded instance results.
-
-**.p**: stops the script.
-
-**.r <instance>**: deletes an instance if it does exist. Bug: needs page refresh to properly update.
-
-**.s <instance>**: saves an instance. Bug: needs page refresh to properly update.
-
-**.i**: prints out all saved instances.
-
-## Ranked Records
+## Ranked Tracker
 
 This script tracks some statistics about your current performance, this is aimed to be more useful in Ranked, though by default works in all rooms. It tracks:
 - Guess rates by song type.
