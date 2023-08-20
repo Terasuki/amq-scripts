@@ -43,7 +43,7 @@
     // Answer reveal.
     new Listener('answer results', (result) => {
 
-        //if (quiz.gameMode !== 'Ranked') return;
+        // if (quiz.gameMode !== 'Ranked') return;
 
         updateResults(result);
         updateDistribution(result);
@@ -134,6 +134,13 @@
             inCorrect: 0,
             ins: 0
         };
+
+        songsPlayed = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0], 
+            [0, 0, 0]
+        ];
     }
 
     function createRankedWindow() {
