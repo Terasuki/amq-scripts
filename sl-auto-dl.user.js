@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Song List Auto Download
 // @namespace    https://github.com/Terasuki
-// @version      1.0
+// @version      1.1
 // @description  Automatically downloads latest game's JSON file.
 // @author       Terasuki
-// @match        https://animemusicquiz.com/*
+// @match        https://*.animemusicquiz.com/*
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqWindows.js
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqScriptInfo.js
 // @grant        none

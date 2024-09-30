@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         AMQ Ranked Tracker
 // @namespace    https://github.com/Terasuki
-// @version      1.1
+// @version      1.2
 // @description  Tracks personal ranked results, current position and song distribution for Novice ranked.
 // @author       Terasuki
-// @match        https://animemusicquiz.com/*
+// @match        https://*.animemusicquiz.com/*
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqWindows.js
 // @require      https://raw.githubusercontent.com/TheJoseph98/AMQ-Scripts/master/common/amqScriptInfo.js
 // ==/UserScript==
